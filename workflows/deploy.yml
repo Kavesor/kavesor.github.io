@@ -1,0 +1,26 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]  # or your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      # Add your build steps here if needed
+      
+      - name: Install SSL certificate
+        run: |
+          mkdir -p .ssl
+          echo "${{ secrets.CLOUDFLARE_ORIGIN_CERTIFICATE }}" > .ssl/cert.pem
+          echo "${{ secrets.CLOUDFLARE_ORIGIN_KEY }}" > .ssl/key.pem
+      
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .  # or your build directory
+          cname: alejandroortega.org
